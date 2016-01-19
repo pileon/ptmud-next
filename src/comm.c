@@ -144,9 +144,9 @@ int parse_ip(const char *addr, struct in_addr *inaddr);
 int set_sendbuf(socket_t s);
 void setup_log(const char *filename, int fd);
 int open_logfile(const char *filename, FILE *stderr_fp);
-#if defined(POSIX)
-sigfunc *my_signal(int signo, sigfunc *func);
-#endif
+//#if defined(POSIX)
+//sigfunc *my_signal(int signo, sigfunc *func);
+//#endif
 
 /* extern fcnts */
 void reboot_wizlists(void);
@@ -644,7 +644,7 @@ void game_loop(socket_t mother_desc)
      * to sleep until the next 0.1 second tick.  The first step is to
      * calculate how long we took processing the previous iteration.
      */
-    
+
     gettimeofday(&before_sleep, (struct timezone *) 0); /* current time */
     timediff(&process_time, &before_sleep, &last_time);
 
@@ -1576,7 +1576,7 @@ ssize_t perform_socket_write(socket_t desc, const char *txt, size_t length)
 
 #endif /* CIRCLE_WINDOWS */
 
-    
+
 /*
  * write_to_descriptor takes a descriptor, and text to write to the
  * descriptor.  It keeps calling the system-level write() until all
@@ -2061,6 +2061,43 @@ void nonblock(socket_t s)
 
 #if defined(CIRCLE_UNIX) || defined(CIRCLE_MACINTOSH)
 
+
+/*
+ * This is an implementation of signal() using sigaction() for portability.
+ * (sigaction() is POSIX; signal() is not.)  Taken from Stevens' _Advanced
+ * Programming in the UNIX Environment_.  We are specifying that all system
+ * calls _not_ be automatically restarted for uniformity, because BSD systems
+ * do not restart select(), even if SA_RESTART is used.
+ *
+ * Note that NeXT 2.x is not POSIX and does not have sigaction; therefore,
+ * I just define it to be the old signal.  If your system doesn't have
+ * sigaction either, you can use the same fix.
+ *
+ * SunOS Release 4.0.2 (sun386) needs this too, according to Tim Aldric.
+ */
+
+#ifndef POSIX
+#define my_signal(signo, func) signal(signo, func)
+#else
+sigfunc *my_signal(int signo, sigfunc *func)
+{
+  struct sigaction sact, oact;
+
+  sact.sa_handler = func;
+  sigemptyset(&sact.sa_mask);
+  sact.sa_flags = 0;
+#ifdef SA_INTERRUPT
+  sact.sa_flags |= SA_INTERRUPT;	/* SunOS */
+#endif
+
+  if (sigaction(signo, &sact, &oact) < 0)
+    return (SIG_ERR);
+
+  return (oact.sa_handler);
+}
+#endif				/* POSIX */
+
+
 RETSIGTYPE reread_wizlists(int sig)
 {
   reread_wizlist = TRUE;
@@ -2102,42 +2139,6 @@ RETSIGTYPE hupsig(int sig)
 }
 
 #endif	/* CIRCLE_UNIX */
-
-/*
- * This is an implementation of signal() using sigaction() for portability.
- * (sigaction() is POSIX; signal() is not.)  Taken from Stevens' _Advanced
- * Programming in the UNIX Environment_.  We are specifying that all system
- * calls _not_ be automatically restarted for uniformity, because BSD systems
- * do not restart select(), even if SA_RESTART is used.
- *
- * Note that NeXT 2.x is not POSIX and does not have sigaction; therefore,
- * I just define it to be the old signal.  If your system doesn't have
- * sigaction either, you can use the same fix.
- *
- * SunOS Release 4.0.2 (sun386) needs this too, according to Tim Aldric.
- */
-
-#ifndef POSIX
-#define my_signal(signo, func) signal(signo, func)
-#else
-sigfunc *my_signal(int signo, sigfunc *func)
-{
-  struct sigaction sact, oact;
-
-  sact.sa_handler = func;
-  sigemptyset(&sact.sa_mask);
-  sact.sa_flags = 0;
-#ifdef SA_INTERRUPT
-  sact.sa_flags |= SA_INTERRUPT;	/* SunOS */
-#endif
-
-  if (sigaction(signo, &sact, &oact) < 0)
-    return (SIG_ERR);
-
-  return (oact.sa_handler);
-}
-#endif				/* POSIX */
-
 
 void signal_setup(void)
 {
@@ -2386,7 +2387,7 @@ void act(const char *str, int hide_invisible, struct char_data *ch,
 
   /*
    * Warning: the following TO_SLEEP code is a hack.
-   * 
+   *
    * I wanted to be able to tell act to deliver a message regardless of sleep
    * without adding an additional argument.  TO_SLEEP is 128 (a single bit
    * high up).  It's ONLY legal to combine TO_SLEEP with one other TO_x

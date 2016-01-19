@@ -131,16 +131,88 @@
 
 #include <stdio.h>
 #include <ctype.h>
-#include <stdarg.h>
+
+#ifdef HAVE_STDARG_H
+# include <stdarg.h>
+#endif
+
+#ifdef HAVE_STDLIB_H
+# include <stdlib.h>
+#endif
 
 #ifdef HAVE_STRING_H
-#include <string.h>
+# include <string.h>
 #endif
+
+#ifdef HAVE_TIME_H
+# include <time.h>
+#endif
+
+#ifdef HAVE_ERRNO_H
+#include <errno.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
+
+#ifdef HAVE_SYS_SOCKET_H
+# include <sys/socket.h>
+#endif
+
+#ifdef HAVE_NETINET_IN_H
+# include <netinet/in.h>
+#endif
+
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif
+
+#ifdef HAVE_NETDB_H
+# include <netdb.h>
+#endif
+
+#ifdef HAVE_SYS_SELECT_H
+# include <sys/select.h>
+#endif
+
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif
+
+#ifdef HAVE_SYS_WAIT_H
+# include <sys/wait.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>
+#endif
+
+#ifdef HAVE_SYS_FCNTL_H
+#include <sys/fcntl.h>
+#endif
+
+#ifndef PATH_MAX
+# ifdef _POSIX_PATH_MAX
+#  define PATH_MAX _POSIX_PATH_MAX
+# else
+#  define PATH_MAX 256
+# endif
+#endif
+
+#if 0
 
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
 #endif
 
+#if defined(HAVE_STRING_H) && defined(HAVE_STDLIB_H) && defined(HAVE_STDARG_H) && defined(HAVE_FLOAT_H)
+# define STDC_HEADERS
+#endif
 
 #if     (defined (STDC_HEADERS) || defined (__GNU_LIBRARY__))
 #include <stdlib.h>
@@ -166,10 +238,6 @@ extern void abort (), exit ();
 
 #ifdef CIRCLE_WINDOWS
 # include <sys\types.h>
-#endif
-
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
 #endif
 
 /* Now, we #define POSIX if we have a POSIX system. */
@@ -200,15 +268,11 @@ extern void abort (), exit ();
 
 /* Header files *******************************************************/
 
- 
+
 /* Header files common to all source files */
 
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
-#endif
-
-#ifdef HAVE_ERRNO_H
-#include <errno.h>
 #endif
 
 #ifdef HAVE_NET_ERRNO_H
@@ -224,17 +288,6 @@ extern void abort (), exit ();
 #include <crypt.h>
 #endif
 
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# if HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-
 #ifdef HAVE_ASSERT_H
 #include <assert.h>
 #else
@@ -246,56 +299,14 @@ extern void abort (), exit ();
 
 #if defined(__COMM_C__) || defined(CIRCLE_UTIL)
 
-#ifndef HAVE_STRUCT_IN_ADDR
-struct in_addr {
-  unsigned long int s_addr;	/* for inet_addr, etc. */
-}
-#endif
-
-#ifdef HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
-
-#ifdef HAVE_FCNTL_H
-#include <fcntl.h>
-#endif
-
-#ifdef HAVE_SYS_FCNTL_H
-#include <sys/fcntl.h>
-#endif
-
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
+//#ifndef HAVE_STRUCT_IN_ADDR
+//struct in_addr {
+//  unsigned long int s_addr;	/* for inet_addr, etc. */
+//}
+//#endif
 
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
-#endif
-
-#ifdef HAVE_SYS_WAIT_H
-# include <sys/wait.h>
-#endif
-
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
-
-#ifdef HAVE_NETDB_H
-# include <netdb.h>
-#endif
-
-#ifdef HAVE_SIGNAL_H
-# ifndef _POSIX_C_SOURCE
-#  define _POSIX_C_SOURCE 2
-#  include <signal.h>
-#  undef _POSIX_C_SOURCE
-# else
-#  include <signal.h>	/* GNU libc 6 already defines _POSIX_C_SOURCE. */
-# endif
 #endif
 
 #ifdef HAVE_SYS_UIO_H
@@ -308,12 +319,10 @@ struct in_addr {
 /* Header files that are only used in act.other.c */
 #ifdef __ACT_OTHER_C__
 
-#ifdef HAVE_SYS_STAT_H
-# include <sys/stat.h>
-#endif
 
 #endif /* __ACT_OTHER_C__ */
 
+#endif // #if 0
 
 /* Basic system dependencies *******************************************/
 
@@ -393,7 +402,7 @@ struct in_addr {
   typedef SOCKET		socket_t;
 #else
 # define CLOSE_SOCKET(sock)	close(sock)
-  typedef int			socket_t;
+typedef int			socket_t;
 #endif
 
 #if defined(__cplusplus)	/* C++ */
@@ -487,7 +496,7 @@ struct in_addr {
 #ifdef NEED_BZERO_PROTO
      void bzero(char *b, int length);
 #endif
- 
+
 #ifdef NEED_CRYPT_PROTO
    char *crypt(const char *key, const char *salt);
 #endif
@@ -549,17 +558,17 @@ struct in_addr {
    int sscanf(const char *s, const char *format, ...);
 #endif
 
-#ifdef NEED_STRDUP_PROTO
+//#ifdef NEED_STRDUP_PROTO
    char *strdup(const char *txt);
-#endif
+//#endif
 
 #ifdef NEED_STRERROR_PROTO
    char *strerror(int errnum);
 #endif
 
-#ifdef NEED_STRLCPY_PROTO
+//#ifdef NEED_STRLCPY_PROTO
    size_t strlcpy(char *dest, const char *src, size_t copylen);
-#endif
+//#endif
 
 #ifdef NEED_SYSTEM_PROTO
    int system(const char *string);
@@ -663,7 +672,7 @@ struct in_addr {
 
 #ifdef NEED_SELECT_PROTO
    int select(int nfds, fd_set *readfds, fd_set *writefds,
-          fd_set *exceptfds, struct timeval *timeout);   
+          fd_set *exceptfds, struct timeval *timeout);
 #endif
 
 #ifdef NEED_SETITIMER_PROTO

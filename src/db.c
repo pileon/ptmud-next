@@ -648,7 +648,7 @@ int count_alias_records(FILE *fl)
   return (total_keywords);
 
   /* No, they are not evil. -gg 6/24/98 */
-ackeof:	
+ackeof:
   log("SYSERR: Unexpected end of help file.");
   exit(1);	/* Some day we hope to handle these things better... */
 }
@@ -1241,7 +1241,7 @@ void interpret_espec(const char *keyword, const char *value, int i, int nr)
 
   CASE("StrAdd") {
     RANGE(0, 100);
-    mob_proto[i].real_abils.str_add = num_arg;    
+    mob_proto[i].real_abils.str_add = num_arg;
   }
 
   CASE("Int") {
@@ -1272,7 +1272,7 @@ void interpret_espec(const char *keyword, const char *value, int i, int nr)
   if (!matched) {
     log("SYSERR: Warning: unrecognized espec keyword %s in mob #%d",
 	    keyword, nr);
-  }    
+  }
 }
 
 #undef CASE
@@ -2350,7 +2350,7 @@ void char_to_store(struct char_data *ch, struct char_file_u *st)
 
   if (ch->player.description) {
     if (strlen(ch->player.description) >= sizeof(st->description)) {
-      log("SYSERR: char_to_store: %s's description length: %d, max: %d! "
+      log("SYSERR: char_to_store: %s's description length: %zu, max: %zu! "
          "Truncated.", GET_PC_NAME(ch), strlen(ch->player.description),
          sizeof(st->description));
       ch->player.description[sizeof(st->description) - 3] = '\0';
@@ -3018,7 +3018,7 @@ int check_bitvector_names(bitvector_t bits, size_t namecount, const char *whatam
 
   for (flagnum = namecount; flagnum < sizeof(bitvector_t) * 8; flagnum++)
     if ((1 << flagnum) & bits) {
-      log("SYSERR: %s has unknown %s flag, bit %d (0 through %d known).", whatami, whatbits, flagnum, namecount - 1);
+      log("SYSERR: %s has unknown %s flag, bit %d (0 through %zu known).", whatami, whatbits, flagnum, namecount - 1);
       error = TRUE;
     }
 

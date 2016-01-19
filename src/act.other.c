@@ -24,6 +24,10 @@
 #include "house.h"
 #include "constants.h"
 
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
 /* extern variables */
 extern struct spell_info_type spell_info[];
 extern const char *class_abbrevs[];
@@ -507,7 +511,7 @@ ACMD(do_ungroup)
   act("$N is no longer a member of your group.", FALSE, ch, 0, tch, TO_CHAR);
   act("You have been kicked out of $n's group!", FALSE, ch, 0, tch, TO_VICT);
   act("$N has been kicked out of $n's group!", FALSE, ch, 0, tch, TO_NOTVICT);
- 
+
   if (!AFF_FLAGGED(tch, AFF_CHARM))
     stop_follower(tch);
 }
