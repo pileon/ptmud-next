@@ -1,3 +1,5 @@
+# TODO: Tests
+
 set(SOURCE_FILES
     act.comm.c         act.social.c    castle.c     fight.c        magic.c    random.c        utils.c
     act.informative.c  act.wizard.c    class.c      graph.c        mail.c     shop.c          weather.c
