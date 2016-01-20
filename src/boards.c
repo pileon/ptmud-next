@@ -261,7 +261,7 @@ int Board_write_message(int board_type, struct char_data *ch, char *arg,
         return (1);
     }
     ct    = time(0);
-    tmstr = (char *) asctime(localtime(&ct));
+    tmstr = asctime(localtime(&ct));
     *(tmstr + strlen(tmstr) - 1) = '\0';
 
     snprintf(buf2, sizeof(buf2), "(%s)", GET_NAME(ch));

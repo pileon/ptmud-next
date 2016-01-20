@@ -2011,7 +2011,7 @@ ACMD(do_date)
         mytime = boot_time;
     }
 
-    tmstr = (char *) asctime(localtime(&mytime));
+    tmstr = asctime(localtime(&mytime));
     *(tmstr + strlen(tmstr) - 1) = '\0';
 
     if (subcmd == SCMD_DATE)

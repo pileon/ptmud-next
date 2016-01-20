@@ -44,9 +44,9 @@
 ***************************************************************************
 **   DON'T TOUCH DEFINES BELOW  */
 
-int  scan_file(void);
+int scan_file(void);
 
-int  has_mail(long recipient);
+int has_mail(long recipient);
 
 void store_mail(long to, long from, char *message_pointer);
 
@@ -71,7 +71,7 @@ struct header_data_type
     /* idnum of the mail's sender		*/
     long   to;
     /* idnum of mail's recipient		*/
-    time_t mail_time;        /* when was the letter mailed?		*/
+    time_t mail_time;  /* when was the letter mailed?		*/
 };
 
 /* size of the data part of a header block */
@@ -90,8 +90,7 @@ struct header_block_type_d
     /* is this a header or data block?	*/
     struct header_data_type header_data;
     /* other header data		*/
-    char                    txt[HEADER_BLOCK_DATASIZE +
-                                1]; /* actual text plus 1 for null	*/
+    char                    txt[HEADER_BLOCK_DATASIZE + 1]; /* actual text plus 1 for null	*/
 };
 
 struct data_block_type_d

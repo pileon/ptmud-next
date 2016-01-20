@@ -536,7 +536,7 @@ int apply_ac(struct char_data *ch, int eq_pos)
         return (0);
     }
 
-    if (!(GET_OBJ_TYPE(GET_EQ(ch, eq_pos)) == ITEM_ARMOR))
+    if (GET_OBJ_TYPE(GET_EQ(ch, eq_pos)) != ITEM_ARMOR)
     {
         return (0);
     }

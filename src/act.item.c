@@ -1437,7 +1437,7 @@ ACMD(do_pour)
         send_to_char(ch, "There is already another liquid in it!\r\n");
         return;
     }
-    if (!(GET_OBJ_VAL(to_obj, 1) < GET_OBJ_VAL(to_obj, 0)))
+    if (GET_OBJ_VAL(to_obj, 1) >= GET_OBJ_VAL(to_obj, 0))
     {
         send_to_char(ch, "There is no room for more.\r\n");
         return;

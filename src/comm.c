@@ -1569,7 +1569,7 @@ int new_descriptor(socket_t s)
         }
 
         /* find the numeric site address */
-        strncpy(newd->host, (char *) inet_ntoa(peer.sin_addr),
+        strncpy(newd->host, inet_ntoa(peer.sin_addr),
                 HOST_LENGTH);    /* strncpy: OK (n->host:HOST_LENGTH+1) */
         *(newd->host + HOST_LENGTH) = '\0';
     }
