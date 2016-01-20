@@ -1,3 +1,5 @@
+src/conf.h
+
 ### CMake template
 CMakeCache.txt
 CMakeFiles
