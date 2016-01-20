@@ -1326,7 +1326,7 @@ void perform_immort_vis(struct char_data *ch)
     send_to_char(ch, "You are already fully visible.\r\n");
     return;
   }
-   
+
   GET_INVIS_LEV(ch) = 0;
   appear(ch);
   send_to_char(ch, "You are now fully visible.\r\n");
@@ -1351,7 +1351,7 @@ void perform_immort_invis(struct char_data *ch, int level)
   GET_INVIS_LEV(ch) = level;
   send_to_char(ch, "Your invisibility level is %d.\r\n", level);
 }
-  
+
 
 ACMD(do_invis)
 {

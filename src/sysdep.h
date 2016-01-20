@@ -130,7 +130,6 @@
 /* Standard C headers  *************************************************/
 
 #include <stdio.h>
-#include <ctype.h>
 
 #ifdef HAVE_STDARG_H
 # include <stdarg.h>
@@ -195,6 +194,8 @@
 #ifdef HAVE_SYS_FCNTL_H
 #include <sys/fcntl.h>
 #endif
+
+#include <ctype.h>
 
 #ifndef PATH_MAX
 # ifdef _POSIX_PATH_MAX

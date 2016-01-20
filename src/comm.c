@@ -66,6 +66,8 @@
 #include "telnet.h"
 #endif
 
+#include <ctype.h>
+
 #ifndef INVALID_SOCKET
 #define INVALID_SOCKET (-1)
 #endif

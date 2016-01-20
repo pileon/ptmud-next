@@ -99,7 +99,7 @@ int *cmd_sort_info;
 void show_obj_to_char(struct obj_data *obj, struct char_data *ch, int mode)
 {
   if (!obj || !ch) {
-    log("SYSERR: NULL pointer in show_obj_to_char(): obj=%p ch=%p", obj, ch);
+    log("SYSERR: NULL pointer in show_obj_to_char(): obj=%p ch=%p", (void *) obj, (void *) ch);
     return;
   }
 
@@ -1418,7 +1418,7 @@ ACMD(do_levels)
   }
 
   for (i = 1; i < LVL_IMMORT; i++) {
-    nlen = snprintf(buf + len, sizeof(buf) - len, "[%2d] %8d-%-8d : ", i,
+    nlen = snprintf(buf + len, sizeof(buf) - len, "[%2zu] %8d-%-8d : ", i,
 		level_exp(GET_CLASS(ch), i), level_exp(GET_CLASS(ch), i + 1) - 1);
     if (len + nlen >= sizeof(buf) || nlen < 0)
       break;

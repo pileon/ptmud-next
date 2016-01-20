@@ -262,7 +262,7 @@ int Valid_Name(char *newname)
       return (STATE(dt) == CON_PLAYING);
 
   /* return valid if list doesn't exist */
-  if (!invalid_list || num_invalid < 1)
+  if (/*!invalid_list ||*/ num_invalid < 1)
     return (1);
 
   /* change to lowercase */
