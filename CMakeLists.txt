@@ -5,6 +5,10 @@ project(ptmud-next
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -Wextra -pedantic -Wno-unused-parameter -pipe")
 
+if(CMAKE_HOST_UNIX)
+    add_definitions(-D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700)
+endif()
+
 include(CheckIncludeFiles)
 
 set(CIRCLE_UNIX True)
