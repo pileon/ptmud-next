@@ -1,0 +1,13 @@
+include_directories(${CMAKE_SOURCE_DIR}/src)
+
+add_executable(autowiz autowiz.c)
+add_executable(delobjs delobjs.c)
+add_executable(listrent listrent.c)
+add_executable(mudpasswd mudpasswd.c)
+add_executable(play2to3 play2to3.c)
+add_executable(purgeplay purgeplay.c)
+add_executable(shopconv shopconv.c)
+add_executable(showplay showplay.c)
+add_executable(sign sign.c)
+add_executable(split split.c)
+add_executable(wld2html wld2html.c)

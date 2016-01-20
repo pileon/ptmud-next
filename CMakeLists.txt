@@ -46,3 +46,4 @@ check_include_files(sys/stat.h HAVE_SYS_STAT_H)
 configure_file(src/conf.h.in ${CMAKE_CURRENT_SOURCE_DIR}/src/conf.h)
 
 add_subdirectory(src)
+add_subdirectory(src/util)
