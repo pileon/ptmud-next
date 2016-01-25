@@ -7,6 +7,6 @@ set(SOURCE_FILES
     act.movement.c     ban.c           config.c     house.c        modify.c   spec_procs.c
     act.offensive.c    boards.c        constants.c  interpreter.c  objsave.c  spell_parser.c
     act.other.c        db.c            limits.c     olc.c          spells.c
-)
+    area.c area.h)
 
 add_executable(ptmud-next ${SOURCE_FILES})
