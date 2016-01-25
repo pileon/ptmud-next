@@ -43,12 +43,12 @@
 #define CIRCLE_UNSIGNED_INDEX    0    /* 0 = signed, 1 = unsigned */
 
 #if CIRCLE_UNSIGNED_INDEX
-# define IDXTYPE	ush_int
+# define IDXTYPE	unsigned long long int
 # define NOWHERE	((IDXTYPE)~0)
 # define NOTHING	((IDXTYPE)~0)
 # define NOBODY		((IDXTYPE)~0)
 #else
-# define IDXTYPE    sh_int
+# define IDXTYPE    long long int
 # define NOWHERE    (-1)    /* nil reference for rooms	*/
 # define NOTHING    (-1)    /* nil reference for objects	*/
 # define NOBODY        (-1)    /* nil reference for mobiles	*/
