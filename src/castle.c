@@ -122,7 +122,7 @@ void castle_mob_spec(mob_vnum mobnum, SPECIAL(*specproc))
     if (rmr == NOBODY)
     {
         if (!mini_mud)
-            log("SYSERR: assign_kings_castle(): can't find mob #%d.", vmv);
+            log("SYSERR: assign_kings_castle(): can't find mob #%lld.", vmv);
     }
     else
     {

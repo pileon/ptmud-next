@@ -510,7 +510,7 @@ void Crash_listrent(struct char_data *ch, char *name)
                     object.item_number, GET_OBJ_RENT(obj),
                     object.location, obj->short_description);
 #else
-                send_to_char(ch, " [%5d] (%5dau) %-20s\r\n", object.item_number,
+                send_to_char(ch, " [%5lld] (%5dau) %-20s\r\n", object.item_number,
                              GET_OBJ_RENT(obj), obj->short_description);
 #endif
                 extract_obj(obj);

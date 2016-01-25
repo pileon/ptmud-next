@@ -122,7 +122,7 @@ ACMD(do_olc)
         {
             rnum = IN_ROOM(ch);
             vnum = GET_ROOM_VNUM(IN_ROOM(ch));
-            send_to_char(ch, "(Using current room %d)\r\n", vnum);
+            send_to_char(ch, "(Using current room %lld)\r\n", vnum);
         }
 
 /*   if (!ROOM_FLAGGED(rnum, ROOM_OLC))
@@ -158,7 +158,7 @@ ACMD(do_olc)
         vnum      = atoi(arg);
         if ((rnum = real_object(vnum)) == NOTHING)
         {
-            send_to_char(ch, "No object with vnum %d.\r\n", vnum);
+            send_to_char(ch, "No object with vnum %lld.\r\n", vnum);
         }
         else
         {

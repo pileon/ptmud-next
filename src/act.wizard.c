@@ -511,7 +511,7 @@ void do_stat_room(struct char_data *ch)
                  CCNRM(ch, C_NRM));
 
     sprinttype(rm->sector_type, sector_types, buf2, sizeof(buf2));
-    send_to_char(ch, "Zone: [%3d], VNum: [%s%5d%s], RNum: [%5d], Type: %s\r\n",
+    send_to_char(ch, "Zone: [%3lld], VNum: [%s%5lld%s], RNum: [%5lld], Type: %s\r\n",
                  zone_table[rm->zone].number, CCGRN(ch, C_NRM), rm->number,
                  CCNRM(ch, C_NRM), IN_ROOM(ch), buf2);
 
@@ -590,14 +590,14 @@ void do_stat_room(struct char_data *ch)
         }
         else
         {
-            snprintf(buf1, sizeof(buf1), "%s%5d%s", CCCYN(ch, C_NRM),
+            snprintf(buf1, sizeof(buf1), "%s%5lld%s", CCCYN(ch, C_NRM),
                      GET_ROOM_VNUM(rm->dir_option[i]->to_room), CCNRM(ch, C_NRM));
         }
 
         sprintbit(rm->dir_option[i]->exit_info, exit_bits, buf2, sizeof(buf2));
 
         send_to_char(ch,
-                     "Exit %s%-5s%s:  To: [%s], Key: [%5d], Keywrd: %s, Type: %s\r\n%s",
+                     "Exit %s%-5s%s:  To: [%s], Key: [%5lld], Keywrd: %s, Type: %s\r\n%s",
                      CCCYN(ch, C_NRM), dirs[i], CCNRM(ch, C_NRM), buf1,
                      rm->dir_option[i]->key,
                      rm->dir_option[i]->keyword ? rm->dir_option[i]->keyword : "None",
@@ -622,7 +622,7 @@ void do_stat_object(struct char_data *ch, struct obj_data *j)
                  j->name);
 
     sprinttype(GET_OBJ_TYPE(j), item_types, buf, sizeof(buf));
-    send_to_char(ch, "VNum: [%s%5d%s], RNum: [%5d], Type: %s, SpecProc: %s\r\n",
+    send_to_char(ch, "VNum: [%s%5lld%s], RNum: [%5lld], Type: %s, SpecProc: %s\r\n",
                  CCGRN(ch, C_NRM), vnum, CCNRM(ch, C_NRM), GET_OBJ_RNUM(j), buf,
                  GET_OBJ_SPEC(j) ? "Exists" : "None");
 
@@ -648,7 +648,7 @@ void do_stat_object(struct char_data *ch, struct obj_data *j)
     send_to_char(ch, "Weight: %d, Value: %d, Cost/day: %d, Timer: %d\r\n",
                  GET_OBJ_WEIGHT(j), GET_OBJ_COST(j), GET_OBJ_RENT(j), GET_OBJ_TIMER(j));
 
-    send_to_char(ch, "In room: %d (%s), ", GET_ROOM_VNUM(IN_ROOM(j)),
+    send_to_char(ch, "In room: %lld (%s), ", GET_ROOM_VNUM(IN_ROOM(j)),
                  IN_ROOM(j) == NOWHERE ? "Nowhere" : world[IN_ROOM(j)].name);
 
     /*
@@ -782,13 +782,13 @@ void do_stat_character(struct char_data *ch, struct char_data *k)
     struct affected_type *aff;
 
     sprinttype(GET_SEX(k), genders, buf, sizeof(buf));
-    send_to_char(ch, "%s %s '%s'  IDNum: [%5ld], In room [%5d]\r\n", buf,
+    send_to_char(ch, "%s %s '%s'  IDNum: [%5ld], In room [%5lld]\r\n", buf,
                  (!IS_NPC(k) ? "PC" : (!IS_MOB(k) ? "NPC" : "MOB")), GET_NAME(k),
                  GET_IDNUM(k), GET_ROOM_VNUM(IN_ROOM(k)));
 
     if (IS_MOB(k))
     {
-        send_to_char(ch, "Alias: %s, VNum: [%5d], RNum: [%5d]\r\n", k->player.name,
+        send_to_char(ch, "Alias: %s, VNum: [%5lld], RNum: [%5lld]\r\n", k->player.name,
                      GET_MOB_VNUM(k), GET_MOB_RNUM(k));
     }
 
@@ -2096,7 +2096,7 @@ ACMD(do_force)
     else if (!str_cmp("room", arg))
     {
         send_to_char(ch, "%s", OK);
-        mudlog(NRM, MAX(LVL_GOD, GET_INVIS_LEV(ch)), TRUE, "(GC) %s forced room %d to %s",
+        mudlog(NRM, MAX(LVL_GOD, GET_INVIS_LEV(ch)), TRUE, "(GC) %s forced room %lld to %s",
                GET_NAME(ch), GET_ROOM_VNUM(IN_ROOM(ch)), to_force);
 
         for (vict = world[IN_ROOM(ch)].people; vict; vict = next_force)
@@ -2138,7 +2138,6 @@ ACMD(do_wiznet)
             MAX_INPUT_LENGTH + MAX_NAME_LENGTH + 32];
     struct descriptor_data *d;
     char                   emote = FALSE;
-    char                   any   = FALSE;
     int                    level = LVL_IMMORT;
 
     skip_spaces(&argument);
@@ -2174,7 +2173,7 @@ ACMD(do_wiznet)
 
     case '@':
         send_to_char(ch, "God channel status:\r\n");
-        for (any = 0, d = descriptor_list; d; d = d->next)
+        for (d = descriptor_list; d; d = d->next)
         {
             if (STATE(d) != CON_PLAYING || GET_LEVEL(d->character) < LVL_IMMORT)
             {
@@ -2292,9 +2291,9 @@ ACMD(do_zreset)
     if (i <= top_of_zone_table)
     {
         reset_zone(i);
-        send_to_char(ch, "Reset zone %d (#%d): %s.\r\n", i, zone_table[i].number,
+        send_to_char(ch, "Reset zone %lld (#%lld): %s.\r\n", i, zone_table[i].number,
                      zone_table[i].name);
-        mudlog(NRM, MAX(LVL_GRGOD, GET_INVIS_LEV(ch)), TRUE, "(GC) %s reset zone %d (%s)",
+        mudlog(NRM, MAX(LVL_GRGOD, GET_INVIS_LEV(ch)), TRUE, "(GC) %s reset zone %lld (%s)",
                GET_NAME(ch), i, zone_table[i].name);
     }
     else
@@ -2449,7 +2448,7 @@ ACMD(do_wizutil)
 size_t print_zone_to_buf(char *bufptr, size_t left, zone_rnum zone)
 {
     return snprintf(bufptr, left,
-                    "%3d %-30.30s Age: %3d; Reset: %3d (%1d); Range: %5d-%5d\r\n",
+                    "%3lld %-30.30s Age: %3d; Reset: %3d (%1d); Range: %5lld-%5lld\r\n",
                     zone_table[zone].number, zone_table[zone].name, zone_table[zone].age,
                     zone_table[zone].lifespan, zone_table[zone].reset_mode,
                     zone_table[zone].bot, zone_table[zone].top);
@@ -2629,9 +2628,9 @@ ACMD(do_show)
         send_to_char(ch, "Current stats:\r\n"
                              "  %5d players in game  %5d connected\r\n"
                              "  %5d registered\r\n"
-                             "  %5d mobiles          %5d prototypes\r\n"
-                             "  %5d objects          %5d prototypes\r\n"
-                             "  %5d rooms            %5d zones\r\n"
+                             "  %5d mobiles          %5lld prototypes\r\n"
+                             "  %5d objects          %5lld prototypes\r\n"
+                             "  %5lld rooms            %5lld zones\r\n"
                              "  %5d large bufs\r\n"
                              "  %5d buf switches     %5d overflows\r\n", i, con,
                      top_of_p_table + 1, j, top_of_mobt + 1, k, top_of_objt + 1,
@@ -2648,7 +2647,7 @@ ACMD(do_show)
             {
                 if (world[i].dir_option[j] && world[i].dir_option[j]->to_room == 0)
                 {
-                    nlen = snprintf(buf + len, sizeof(buf) - len, "%2d: [%5d] %s\r\n",
+                    nlen = snprintf(buf + len, sizeof(buf) - len, "%2d: [%5lld] %s\r\n",
                                     ++k, GET_ROOM_VNUM(i), world[i].name);
                     if (len + nlen >= sizeof(buf) || nlen < 0)
                     {
@@ -2668,7 +2667,7 @@ ACMD(do_show)
         {
             if (ROOM_FLAGGED(i, ROOM_DEATH))
             {
-                nlen = snprintf(buf + len, sizeof(buf) - len, "%2d: [%5d] %s\r\n", ++j,
+                nlen = snprintf(buf + len, sizeof(buf) - len, "%2d: [%5lld] %s\r\n", ++j,
                                 GET_ROOM_VNUM(i), world[i].name);
                 if (len + nlen >= sizeof(buf) || nlen < 0)
                 {
@@ -2687,7 +2686,7 @@ ACMD(do_show)
         {
             if (ROOM_FLAGGED(i, ROOM_GODROOM))
             {
-                nlen = snprintf(buf + len, sizeof(buf) - len, "%2d: [%5d] %s\r\n", ++j,
+                nlen = snprintf(buf + len, sizeof(buf) - len, "%2d: [%5lld] %s\r\n", ++j,
                                 GET_ROOM_VNUM(i), world[i].name);
                 if (len + nlen >= sizeof(buf) || nlen < 0)
                 {
@@ -3121,7 +3120,7 @@ int perform_set(struct char_data *ch, struct char_data *vict, int mode, char *va
             {
                 SET_BIT(PLR_FLAGS(vict), PLR_LOADROOM);
                 GET_LOADROOM(vict) = rvnum;
-                send_to_char(ch, "%s will enter at room #%d.", GET_NAME(vict),
+                send_to_char(ch, "%s will enter at room #%lld.", GET_NAME(vict),
                              GET_LOADROOM(vict));
             }
             else

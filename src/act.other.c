@@ -1041,7 +1041,7 @@ ACMD(do_gen_write)
         send_to_char(ch, "Could not open the file.  Sorry.\r\n");
         return;
     }
-    fprintf(fl, "%-8s (%6.6s) [%5d] %s\n", GET_NAME(ch), (tmp + 4),
+    fprintf(fl, "%-8s (%6.6s) [%5lld] %s\n", GET_NAME(ch), (tmp + 4),
             GET_ROOM_VNUM(IN_ROOM(ch)), argument);
     fclose(fl);
     send_to_char(ch, "Okay.  Thanks!\r\n");

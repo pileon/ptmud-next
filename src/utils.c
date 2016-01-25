@@ -219,7 +219,7 @@ int strn_cmp(const char *arg1, const char *arg2, int n)
 /* log a death trap hit */
 void log_death_trap(struct char_data *ch)
 {
-    mudlog(BRF, LVL_IMMORT, TRUE, "%s hit death trap #%d (%s)", GET_NAME(ch),
+    mudlog(BRF, LVL_IMMORT, TRUE, "%s hit death trap #%lld (%s)", GET_NAME(ch),
            GET_ROOM_VNUM(IN_ROOM(ch)), world[IN_ROOM(ch)].name);
 }
 
@@ -773,7 +773,7 @@ int room_is_dark(room_rnum room)
 {
     if (!VALID_ROOM_RNUM(room))
     {
-        log("room_is_dark: Invalid room rnum %d. (0-%d)", room, top_of_world);
+        log("room_is_dark: Invalid room rnum %lld. (0-%lld)", room, top_of_world);
         return (FALSE);
     }
 

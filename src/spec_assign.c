@@ -82,7 +82,7 @@ void ASSIGNMOB(mob_vnum mob, SPECIAL(fname))
         mob_index[rnum].func = fname;
     }
     else if (!mini_mud)
-        log("SYSERR: Attempt to assign spec to non-existant mob #%d", mob);
+        log("SYSERR: Attempt to assign spec to non-existant mob #%lld", mob);
 }
 
 void ASSIGNOBJ(obj_vnum obj, SPECIAL(fname))
@@ -94,7 +94,7 @@ void ASSIGNOBJ(obj_vnum obj, SPECIAL(fname))
         obj_index[rnum].func = fname;
     }
     else if (!mini_mud)
-        log("SYSERR: Attempt to assign spec to non-existant obj #%d", obj);
+        log("SYSERR: Attempt to assign spec to non-existant obj #%lld", obj);
 }
 
 void ASSIGNROOM(room_vnum room, SPECIAL(fname))
@@ -106,7 +106,7 @@ void ASSIGNROOM(room_vnum room, SPECIAL(fname))
         world[rnum].func = fname;
     }
     else if (!mini_mud)
-        log("SYSERR: Attempt to assign spec to non-existant room #%d", room);
+        log("SYSERR: Attempt to assign spec to non-existant room #%lld", room);
 }
 
 

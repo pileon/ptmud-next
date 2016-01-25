@@ -545,6 +545,7 @@ typedef IDXTYPE obj_vnum;
 typedef IDXTYPE mob_vnum;
 typedef IDXTYPE zone_vnum;
 typedef IDXTYPE shop_vnum;
+typedef IDXTYPE area_vnum;
 
 /* Various real (array-reference) number types. */
 typedef IDXTYPE room_rnum;
@@ -552,6 +553,7 @@ typedef IDXTYPE obj_rnum;
 typedef IDXTYPE mob_rnum;
 typedef IDXTYPE zone_rnum;
 typedef IDXTYPE shop_rnum;
+typedef IDXTYPE area_rnum;
 
 
 /*

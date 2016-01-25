@@ -1404,7 +1404,7 @@ void read_line(FILE *shop_f, const char *string, void *data)
 
     if (!get_line(shop_f, buf) || !sscanf(buf, string, data))
     {
-        log("SYSERR: Error in shop #%d, near '%s' with '%s'", SHOP_NUM(top_shop), buf,
+        log("SYSERR: Error in shop #%lld, near '%s' with '%s'", SHOP_NUM(top_shop), buf,
             string);
         exit(1);
     }
@@ -1533,14 +1533,14 @@ char *read_shop_message(int mnum, room_vnum shr, FILE *shop_f, const char *why)
         {
             if (ss == 0)
             {
-                log("SYSERR: Shop #%d has %%d before %%s, message #%d.", shr, mnum);
+                log("SYSERR: Shop #%lld has %%d before %%s, message #%d.", shr, mnum);
                 err++;
             }
             ds++;
         }
         else if (tbuf[cht + 1] != '%')
         {
-            log("SYSERR: Shop #%d has invalid format '%%%c' in message #%d.", shr,
+            log("SYSERR: Shop #%lld has invalid format '%%%c' in message #%d.", shr,
                 tbuf[cht + 1], mnum);
             err++;
         }
@@ -1548,7 +1548,7 @@ char *read_shop_message(int mnum, room_vnum shr, FILE *shop_f, const char *why)
 
     if (ss > 1 || ds > 1)
     {
-        log("SYSERR: Shop #%d has too many specifiers for message #%d. %%s=%d %%d=%d",
+        log("SYSERR: Shop #%lld has too many specifiers for message #%d. %%s=%d %%d=%d",
             shr, mnum, ss, ds);
         err++;
     }
@@ -1755,11 +1755,11 @@ void list_all_shops(struct char_data *ch)
         }
         else
         {
-            sprintf(buf1, "%6d", mob_index[SHOP_KEEPER(shop_nr)].vnum);
+            sprintf(buf1, "%6lld", mob_index[SHOP_KEEPER(shop_nr)].vnum);
         }    /* sprintf: OK (for 'buf1 >= 11', 32-bit int) */
 
         len += snprintf(buf + len, sizeof(buf) - len,
-                        "%3d   %6d   %6d    %s   %3.2f   %3.2f    %s\r\n", shop_nr + 1,
+                        "%3d   %6lld   %6lld    %s   %3.2f   %3.2f    %s\r\n", shop_nr + 1,
                         SHOP_NUM(shop_nr), SHOP_ROOM(shop_nr, 0), buf1,
                         SHOP_SELLPROFIT(shop_nr), SHOP_BUYPROFIT(shop_nr),
                         customer_string(shop_nr, FALSE));
@@ -1775,7 +1775,7 @@ void list_detailed_shop(struct char_data *ch, int shop_nr)
     int              sindex, column;
     char             *ptrsave;
 
-    send_to_char(ch, "Vnum:       [%5d], Rnum: [%5d]\r\n", SHOP_NUM(shop_nr),
+    send_to_char(ch, "Vnum:       [%5lld], Rnum: [%5d]\r\n", SHOP_NUM(shop_nr),
                  shop_nr + 1);
 
 
@@ -1794,12 +1794,12 @@ void list_detailed_shop(struct char_data *ch, int shop_nr)
 
         if ((temp = real_room(SHOP_ROOM(shop_nr, sindex))) != NOWHERE)
         {
-            linelen = snprintf(buf1, sizeof(buf1), "%s (#%d)", world[temp].name,
+            linelen = snprintf(buf1, sizeof(buf1), "%s (#%lld)", world[temp].name,
                                GET_ROOM_VNUM(temp));
         }
         else
         {
-            linelen = snprintf(buf1, sizeof(buf1), "<UNKNOWN> (#%d)",
+            linelen = snprintf(buf1, sizeof(buf1), "<UNKNOWN> (#%lld)",
                                SHOP_ROOM(shop_nr, sindex));
         }
 
@@ -1825,7 +1825,7 @@ void list_detailed_shop(struct char_data *ch, int shop_nr)
     send_to_char(ch, "\r\nShopkeeper: ");
     if (SHOP_KEEPER(shop_nr) != NOBODY)
     {
-        send_to_char(ch, "%s (#%d), Special Function: %s\r\n",
+        send_to_char(ch, "%s (#%lld), Special Function: %s\r\n",
                      GET_NAME(&mob_proto[SHOP_KEEPER(shop_nr)]),
                      mob_index[SHOP_KEEPER(shop_nr)].vnum, YESNO(SHOP_FUNC(shop_nr)));
 
@@ -1858,7 +1858,7 @@ void list_detailed_shop(struct char_data *ch, int shop_nr)
             send_to_char(ch, ", ");
             column += 2;
         }
-        linelen = snprintf(buf1, sizeof(buf1), "%s (#%d)",
+        linelen = snprintf(buf1, sizeof(buf1), "%s (#%lld)",
                            obj_proto[SHOP_PRODUCT(shop_nr, sindex)].short_description,
                            obj_index[SHOP_PRODUCT(shop_nr, sindex)].vnum);
 

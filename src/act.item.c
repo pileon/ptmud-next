@@ -1037,7 +1037,7 @@ void name_from_drinkcon(struct obj_data *obj)
     liqname = drinknames[GET_OBJ_VAL(obj, 2)];
     if (!isname(liqname, obj->name))
     {
-        log("SYSERR: Can't remove liquid '%s' from '%s' (%d) item.", liqname, obj->name,
+        log("SYSERR: Can't remove liquid '%s' from '%s' (%lld) item.", liqname, obj->name,
             obj->item_number);
         return;
     }

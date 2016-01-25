@@ -1149,7 +1149,7 @@ void mag_creations(int level, struct char_data *ch, int spellnum)
     if (!(tobj = read_object(z, VIRTUAL)))
     {
         send_to_char(ch, "I seem to have goofed.\r\n");
-        log("SYSERR: spell_creations, spell %d, obj %d: obj not found", spellnum, z);
+        log("SYSERR: spell_creations, spell %d, obj %lld: obj not found", spellnum, z);
         return;
     }
     obj_to_char(tobj, ch);

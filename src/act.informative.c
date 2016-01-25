@@ -539,7 +539,7 @@ ACMD(do_exits)
 
         if (GET_LEVEL(ch) >= LVL_IMMORT)
         {
-            send_to_char(ch, "%-5s - [%5d] %s\r\n", dirs[door],
+            send_to_char(ch, "%-5s - [%5lld] %s\r\n", dirs[door],
                          GET_ROOM_VNUM(EXIT(ch, door)->to_room),
                          world[EXIT(ch, door)->to_room].name);
         }
@@ -581,7 +581,7 @@ void look_at_room(struct char_data *ch, int ignore_brief)
         char buf[MAX_STRING_LENGTH];
 
         sprintbit(ROOM_FLAGS(IN_ROOM(ch)), room_bits, buf, sizeof(buf));
-        send_to_char(ch, "[%5d] %s [ %s]", GET_ROOM_VNUM(IN_ROOM(ch)),
+        send_to_char(ch, "[%5lld] %s [ %s]", GET_ROOM_VNUM(IN_ROOM(ch)),
                      world[IN_ROOM(ch)].name, buf);
     }
     else
@@ -1789,7 +1789,7 @@ void print_object_location(int num, struct obj_data *obj, struct char_data *ch, 
 
     if (IN_ROOM(obj) != NOWHERE)
     {
-        send_to_char(ch, "[%5d] %s\r\n", GET_ROOM_VNUM(IN_ROOM(obj)),
+        send_to_char(ch, "[%5lld] %s\r\n", GET_ROOM_VNUM(IN_ROOM(obj)),
                      world[IN_ROOM(obj)].name);
     }
     else if (obj->carried_by)
@@ -1835,14 +1835,14 @@ void perform_immort_where(struct char_data *ch, char *arg)
                 {
                     if (d->original)
                     {
-                        send_to_char(ch, "%-20s - [%5d] %s (in %s)\r\n", GET_NAME(i),
+                        send_to_char(ch, "%-20s - [%5lld] %s (in %s)\r\n", GET_NAME(i),
                                      GET_ROOM_VNUM(IN_ROOM(d->character)),
                                      world[IN_ROOM(d->character)].name,
                                      GET_NAME(d->character));
                     }
                     else
                     {
-                        send_to_char(ch, "%-20s - [%5d] %s\r\n", GET_NAME(i),
+                        send_to_char(ch, "%-20s - [%5lld] %s\r\n", GET_NAME(i),
                                      GET_ROOM_VNUM(IN_ROOM(i)), world[IN_ROOM(i)].name);
                     }
                 }
@@ -1856,7 +1856,7 @@ void perform_immort_where(struct char_data *ch, char *arg)
             if (CAN_SEE(ch, i) && IN_ROOM(i) != NOWHERE && isname(arg, i->player.name))
             {
                 found = 1;
-                send_to_char(ch, "M%3d. %-25s - [%5d] %s\r\n", ++num, GET_NAME(i),
+                send_to_char(ch, "M%3d. %-25s - [%5lld] %s\r\n", ++num, GET_NAME(i),
                              GET_ROOM_VNUM(IN_ROOM(i)), world[IN_ROOM(i)].name);
             }
         }

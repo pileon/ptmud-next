@@ -451,7 +451,7 @@ void char_from_room(struct char_data *ch)
 void char_to_room(struct char_data *ch, room_rnum room)
 {
     if (ch == NULL || room == NOWHERE || room > top_of_world)
-        log("SYSERR: Illegal value(s) passed to char_to_room. (Room: %d/%d Ch: %p", room,
+        log("SYSERR: Illegal value(s) passed to char_to_room. (Room: %lld/%lld Ch: %p", room,
             top_of_world, (void *) ch);
     else
     {
@@ -805,7 +805,7 @@ struct char_data *get_char_num(mob_rnum nr)
 void obj_to_room(struct obj_data *object, room_rnum room)
 {
     if (!object || room == NOWHERE || room > top_of_world)
-        log("SYSERR: Illegal value(s) passed to obj_to_room. (Room #%d/%d, obj %p)", room,
+        log("SYSERR: Illegal value(s) passed to obj_to_room. (Room #%lld/%lld, obj %p)", room,
             top_of_world, (void *) object);
     else
     {
@@ -826,7 +826,7 @@ void obj_from_room(struct obj_data *object)
 
     if (!object || IN_ROOM(object) == NOWHERE)
     {
-        log("SYSERR: NULL object (%p) or obj not in a room (%d) passed to obj_from_room",
+        log("SYSERR: NULL object (%p) or obj not in a room (%lld) passed to obj_from_room",
             (void *) object, IN_ROOM(object));
         return;
     }

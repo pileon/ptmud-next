@@ -644,7 +644,7 @@ void boot_db(void)
 
     for (i = 0; i <= top_of_zone_table; i++)
     {
-        log("Resetting #%d: %s (rooms %d-%d).", zone_table[i].number, zone_table[i].name,
+        log("Resetting #%lld: %s (rooms %lld-%lld).", zone_table[i].number, zone_table[i].name,
             zone_table[i].bot, zone_table[i].top);
         reset_zone(i);
     }
@@ -1287,7 +1287,7 @@ void setup_dir(FILE *fl, int room, int dir)
     int  t[5];
     char line[READ_SIZE], buf2[128];
 
-    snprintf(buf2, sizeof(buf2), "room #%d, direction D%d", GET_ROOM_VNUM(room), dir);
+    snprintf(buf2, sizeof(buf2), "room #%lld, direction D%d", GET_ROOM_VNUM(room), dir);
 
     CREATE(world[room].dir_option[dir], struct room_direction_data, 1);
     world[room].dir_option[dir]->general_description = fread_string(fl, buf2);
@@ -1428,7 +1428,7 @@ void renum_zone_table(void)
             {
                 if (!mini_mud)
                 {
-                    snprintf(buf, sizeof(buf), "Invalid vnum %d, cmd disabled",
+                    snprintf(buf, sizeof(buf), "Invalid vnum %lld, cmd disabled",
                              a == NOWHERE ? olda : b == NOWHERE ? oldb : oldc);
                     log_zone_error(zone, cmd_no, buf);
                 }
@@ -1974,12 +1974,12 @@ void load_zones(FILE *fl, char *zonename)
 
     line_num += get_line(fl, buf);
 
-    if (sscanf(buf, "#%hd", &Z.number) != 1)
+    if (sscanf(buf, "#%lld", &Z.number) != 1)
     {
         log("SYSERR: Format error in %s, line %d", zname, line_num);
         exit(1);
     }
-    snprintf(buf2, sizeof(buf2), "beginning of zone #%d", Z.number);
+    snprintf(buf2, sizeof(buf2), "beginning of zone #%lld", Z.number);
 
     line_num += get_line(fl, buf);
     if ((ptr = strchr(buf, '~')) != NULL)
@@ -1989,14 +1989,14 @@ void load_zones(FILE *fl, char *zonename)
     Z.name                               = strdup(buf);
 
     line_num += get_line(fl, buf);
-    if (sscanf(buf, " %hd %hd %d %d ", &Z.bot, &Z.top, &Z.lifespan, &Z.reset_mode) != 4)
+    if (sscanf(buf, " %lld %lld %d %d ", &Z.bot, &Z.top, &Z.lifespan, &Z.reset_mode) != 4)
     {
         log("SYSERR: Format error in numeric constant line of %s", zname);
         exit(1);
     }
     if (Z.bot > Z.top)
     {
-        log("SYSERR: Zone %d bottom (%d) > top (%d).", Z.number, Z.bot, Z.top);
+        log("SYSERR: Zone %lld bottom (%lld) > top (%lld).", Z.number, Z.bot, Z.top);
         exit(1);
     }
 
@@ -2198,7 +2198,7 @@ int vnum_mobile(char *searchname, struct char_data *ch)
     {
         if (isname(searchname, mob_proto[nr].player.name))
         {
-            send_to_char(ch, "%3d. [%5d] %s\r\n", ++found, mob_index[nr].vnum,
+            send_to_char(ch, "%3d. [%5lld] %s\r\n", ++found, mob_index[nr].vnum,
                          mob_proto[nr].player.short_descr);
         }
     }
@@ -2215,7 +2215,7 @@ int vnum_object(char *searchname, struct char_data *ch)
     {
         if (isname(searchname, obj_proto[nr].name))
         {
-            send_to_char(ch, "%3d. [%5d] %s\r\n", ++found, obj_index[nr].vnum,
+            send_to_char(ch, "%3d. [%5lld] %s\r\n", ++found, obj_index[nr].vnum,
                          obj_proto[nr].short_description);
         }
     }
@@ -2248,7 +2248,7 @@ struct char_data *read_mobile(mob_vnum nr, int type) /* and mob_rnum */
     {
         if ((i = real_mobile(nr)) == NOBODY)
         {
-            log("WARNING: Mobile vnum %d does not exist in database.", nr);
+            log("WARNING: Mobile vnum %lld does not exist in database.", nr);
             return (NULL);
         }
     }
@@ -2308,7 +2308,7 @@ struct obj_data *read_object(obj_vnum nr, int type) /* and obj_rnum */
 
     if (i == NOTHING || i > top_of_objt)
     {
-        log("Object (%c) %d does not exist in database.", type == VIRTUAL ? 'V' : 'R',
+        log("Object (%c) %lld does not exist in database.", type == VIRTUAL ? 'V' : 'R',
             nr);
         return (NULL);
     }
@@ -2415,7 +2415,7 @@ void zone_update(void)
 void log_zone_error(zone_rnum zone, int cmd_no, const char *message)
 {
     mudlog(NRM, LVL_GOD, TRUE, "SYSERR: zone file: %s", message);
-    mudlog(NRM, LVL_GOD, TRUE, "SYSERR: ...offending cmd: '%c' cmd in zone #%d, line %d",
+    mudlog(NRM, LVL_GOD, TRUE, "SYSERR: ...offending cmd: '%c' cmd in zone #%lld, line %d",
            ZCMD.command, zone_table[zone].number, ZCMD.line);
 }
 
@@ -3057,7 +3057,7 @@ void free_char(struct char_data *ch)
         }
         free(ch->player_specials);
         if (IS_NPC(ch))
-            log("SYSERR: Mob %s (#%d) had player_specials allocated!", GET_NAME(ch),
+            log("SYSERR: Mob %s (#%lld) had player_specials allocated!", GET_NAME(ch),
                 GET_MOB_VNUM(ch));
     }
     if (!IS_NPC(ch) || (IS_NPC(ch) && GET_MOB_RNUM(ch) == NOBODY))
@@ -3588,14 +3588,14 @@ int check_object(struct obj_data *obj)
     int  error = FALSE;
 
     if (GET_OBJ_WEIGHT(obj) < 0 && (error = TRUE))
-        log("SYSERR: Object #%d (%s) has negative weight (%d).", GET_OBJ_VNUM(obj),
+        log("SYSERR: Object #%lld (%s) has negative weight (%d).", GET_OBJ_VNUM(obj),
             obj->short_description, GET_OBJ_WEIGHT(obj));
 
     if (GET_OBJ_RENT(obj) < 0 && (error = TRUE))
-        log("SYSERR: Object #%d (%s) has negative cost/day (%d).", GET_OBJ_VNUM(obj),
+        log("SYSERR: Object #%lld (%s) has negative cost/day (%d).", GET_OBJ_VNUM(obj),
             obj->short_description, GET_OBJ_RENT(obj));
 
-    snprintf(objname, sizeof(objname), "Object #%d (%s)", GET_OBJ_VNUM(obj),
+    snprintf(objname, sizeof(objname), "Object #%lld (%s)", GET_OBJ_VNUM(obj),
              obj->short_description);
     error |= check_bitvector_names(GET_OBJ_WEAR(obj), wear_bits_count, objname,
                                    "object wear");
@@ -3612,13 +3612,13 @@ int check_object(struct obj_data *obj)
 
         strlcpy(onealias, space ? space + 1 : obj->name, sizeof(onealias));
         if (search_block(onealias, drinknames, TRUE) < 0 && (error = TRUE))
-            log("SYSERR: Object #%d (%s) doesn't have drink type as last alias. (%s)",
+            log("SYSERR: Object #%lld (%s) doesn't have drink type as last alias. (%s)",
                 GET_OBJ_VNUM(obj), obj->short_description, obj->name);
     }
         /* Fall through. */
     case ITEM_FOUNTAIN:
         if (GET_OBJ_VAL(obj, 1) > GET_OBJ_VAL(obj, 0) && (error = TRUE))
-            log("SYSERR: Object #%d (%s) contains (%d) more than maximum (%d).",
+            log("SYSERR: Object #%lld (%s) contains (%d) more than maximum (%d).",
                 GET_OBJ_VNUM(obj), obj->short_description, GET_OBJ_VAL(obj, 1),
                 GET_OBJ_VAL(obj, 0));
         break;
@@ -3634,7 +3634,7 @@ int check_object(struct obj_data *obj)
         error |= check_object_level(obj, 0);
         error |= check_object_spell_number(obj, 3);
         if (GET_OBJ_VAL(obj, 2) > GET_OBJ_VAL(obj, 1) && (error = TRUE))
-            log("SYSERR: Object #%d (%s) has more charges (%d) than maximum (%d).",
+            log("SYSERR: Object #%lld (%s) has more charges (%d) than maximum (%d).",
                 GET_OBJ_VNUM(obj), obj->short_description, GET_OBJ_VAL(obj, 2),
                 GET_OBJ_VAL(obj, 1));
         break;
@@ -3670,7 +3670,7 @@ int check_object_spell_number(struct obj_data *obj, int val)
         error = TRUE;
     }
     if (error)
-        log("SYSERR: Object #%d (%s) has out of range spell #%d.", GET_OBJ_VNUM(obj),
+        log("SYSERR: Object #%lld (%s) has out of range spell #%d.", GET_OBJ_VNUM(obj),
             obj->short_description, GET_OBJ_VAL(obj, val));
 
     /*
@@ -3695,7 +3695,7 @@ int check_object_spell_number(struct obj_data *obj, int val)
 
     if ((spellname == unused_spellname || !str_cmp("UNDEFINED", spellname)) &&
         (error = TRUE))
-        log("SYSERR: Object #%d (%s) uses '%s' spell #%d.", GET_OBJ_VNUM(obj),
+        log("SYSERR: Object #%lld (%s) uses '%s' spell #%d.", GET_OBJ_VNUM(obj),
             obj->short_description, spellname, GET_OBJ_VAL(obj, val));
 
     return (error);
@@ -3706,7 +3706,7 @@ int check_object_level(struct obj_data *obj, int val)
     int error = FALSE;
 
     if ((GET_OBJ_VAL(obj, val) < 0 || GET_OBJ_VAL(obj, val) > LVL_IMPL) && (error = TRUE))
-        log("SYSERR: Object #%d (%s) has out of range level #%d.", GET_OBJ_VNUM(obj),
+        log("SYSERR: Object #%lld (%s) has out of range level #%d.", GET_OBJ_VNUM(obj),
             obj->short_description, GET_OBJ_VAL(obj, val));
 
     return (error);

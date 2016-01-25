@@ -67,7 +67,7 @@ int House_get_filename(room_vnum vnum, char *filename, size_t maxlen)
         return (0);
     }
 
-    snprintf(filename, maxlen, LIB_HOUSE"%d.house", vnum);
+    snprintf(filename, maxlen, LIB_HOUSE"%lld.house", vnum);
     return (1);
 }
 
@@ -195,12 +195,12 @@ void House_delete_file(room_vnum vnum)
     if (!(fl = fopen(filename, "rb")))
     {
         if (errno != ENOENT)
-            log("SYSERR: Error deleting house file #%d. (1): %s", vnum, strerror(errno));
+            log("SYSERR: Error deleting house file #%lld. (1): %s", vnum, strerror(errno));
         return;
     }
     fclose(fl);
     if (remove(filename) < 0)
-        log("SYSERR: Error deleting house file #%d. (2): %s", vnum, strerror(errno));
+        log("SYSERR: Error deleting house file #%lld. (2): %s", vnum, strerror(errno));
 }
 
 
@@ -220,7 +220,7 @@ void House_listrent(struct char_data *ch, room_vnum vnum)
     }
     if (!(fl = fopen(filename, "rb")))
     {
-        send_to_char(ch, "No objects on file for house #%d.\r\n", vnum);
+        send_to_char(ch, "No objects on file for house #%lld.\r\n", vnum);
         return;
     }
     *buf = '\0';
@@ -234,7 +234,7 @@ void House_listrent(struct char_data *ch, room_vnum vnum)
         }
         if (!feof(fl) && (obj = Obj_from_store(object, &i)) != NULL)
         {
-            send_to_char(ch, " [%5d] (%5dau) %s\r\n", GET_OBJ_VNUM(obj),
+            send_to_char(ch, " [%5lld] (%5dau) %s\r\n", GET_OBJ_VNUM(obj),
                          GET_OBJ_RENT(obj), obj->short_description);
             free_obj(obj);
         }
@@ -393,7 +393,7 @@ void hcontrol_list_houses(struct char_data *ch)
         /* Now we need a copy of the owner's name to capitalize. -gg 6/21/98 */
         strcpy(own_name,
                temp);    /* strcpy: OK (names guaranteed <= MAX_NAME_LENGTH+1) */
-        send_to_char(ch, "%7d %7d  %-10s    %2d    %-12s %s\r\n", house_control[i].vnum,
+        send_to_char(ch, "%7lld %7lld  %-10s    %2d    %-12s %s\r\n", house_control[i].vnum,
                      house_control[i].atrium, built_on, house_control[i].num_of_guests,
                      CAP(own_name), last_pay);
 
@@ -450,7 +450,7 @@ void hcontrol_build_house(struct char_data *ch, char *arg)
     }
     if (TOROOM(real_house, exit_num) == NOWHERE)
     {
-        send_to_char(ch, "There is no exit %s from room %d.\r\n", dirs[exit_num],
+        send_to_char(ch, "There is no exit %s from room %lld.\r\n", dirs[exit_num],
                      virt_house);
         return;
     }
@@ -513,13 +513,13 @@ void hcontrol_destroy_house(struct char_data *ch, char *arg)
         return;
     }
     if ((real_atrium = real_room(house_control[i].atrium)) == NOWHERE)
-        log("SYSERR: House %d had invalid atrium %d!", atoi(arg),
+        log("SYSERR: House %d had invalid atrium %lld!", atoi(arg),
             house_control[i].atrium);
     else
         REMOVE_BIT(ROOM_FLAGS(real_atrium), ROOM_ATRIUM);
 
     if ((real_house = real_room(house_control[i].vnum)) == NOWHERE)
-        log("SYSERR: House %d had invalid vnum %d!", atoi(arg), house_control[i].vnum);
+        log("SYSERR: House %d had invalid vnum %lld!", atoi(arg), house_control[i].vnum);
     else
         REMOVE_BIT(ROOM_FLAGS(real_house), ROOM_HOUSE | ROOM_PRIVATE | ROOM_HOUSE_CRASH);
 
