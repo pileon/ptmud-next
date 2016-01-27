@@ -21,7 +21,7 @@ struct area_data *areas = NULL;
 
 static int count_commands(FILE *fl);
 static int load_header(FILE *fl, char *areaname, struct area_data *area);
-static int load_commands(FILE *fl, char *areaname, struct area_data *area);
+static int load_commands(FILE *fl, char *areaname, struct area_data *area, int line_num);
 
 /* ********************************************************************* */
 
@@ -33,7 +33,7 @@ void load_area(FILE *fl, char *areaname)
 
     struct area_data *area = &areas[rarea];
 
-    load_header(fl, areaname, area);
+    int line_num = load_header(fl, areaname, area);
 
     if (commands == 0)
     {
@@ -48,7 +48,7 @@ void load_area(FILE *fl, char *areaname)
             exit(1);
         }
 
-        load_commands(fl, areaname, area);
+        load_commands(fl, areaname, area, line_num);
     }
 }
 
@@ -80,10 +80,46 @@ static int count_commands(FILE *fl)
 
 static int load_header(FILE *fl, char *areaname, struct area_data *area)
 {
-    return 0;
+    char buf[READ_SIZE];
+    int line_num = 0;
+    char *ptr;
+
+    // Get area virtual numver
+    line_num += get_line(fl, buf);
+    if (sscanf(buf, "#%lld", &area->area_number) != 1)
+    {
+        log("SYSERR: Format error in area %s, line %d", areaname, line_num);
+        exit(1);
+    }
+
+    // Get area name
+    line_num += get_line(fl, buf);
+    if ((ptr = strchr(buf, '~')) != NULL)
+    {
+        *ptr = '\0';
+    }
+    area->name = strdup(buf);
+
+    // Get area author name
+    line_num += get_line(fl, buf);
+    if ((ptr = strchr(buf, '~')) != NULL)
+    {
+        *ptr = '\0';
+    }
+    area->author_name = strdup(buf);
+
+    // Get area author email address
+    line_num += get_line(fl, buf);
+    if ((ptr = strchr(buf, '~')) != NULL)
+    {
+        *ptr = '\0';
+    }
+    area->author_email = strdup(buf);
+
+    return line_num;
 }
 
-static int load_commands(FILE *fl, char *areaname, struct area_data *area)
+static int load_commands(FILE *fl, char *areaname, struct area_data *area, int line_num)
 {
     return 0;
 }
