@@ -7,19 +7,10 @@
 
 struct area_load_data
 {
-    enum
-    {
-        LOAD_ZON,
-        LOAD_WLD,
-        LOAD_MOB,
-        LOAD_OBJ,
-        LOAD_SHP
-    } type;
-
     // TODO: Conditions?
 
-    char                  *path;
-    struct area_load_data *next;
+    char  type;  // Type of file to load
+    char *path;
 };
 
 struct area_data

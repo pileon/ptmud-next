@@ -14,6 +14,7 @@
 #include "structs.h"
 #include "utils.h"
 #include "area.h"
+#include "interpreter.h"
 
 struct area_data *areas = NULL;
 
@@ -66,8 +67,10 @@ static int count_commands(FILE *fl)
 
     while (get_line(fl, buf))
     {
-        if (buf[0] == 'L' &&
-            (buf[1] == 'M' || buf[1] == 'O' || buf[1] == 'S' ||buf[1] == 'W' ||buf[1] == 'Z'))
+        char *ptr = buf;
+        skip_spaces(&ptr);
+        if (ptr[0] == 'L' &&
+            (ptr[1] == 'M' || ptr[1] == 'O' || ptr[1] == 'S' || ptr[1] == 'W' || ptr[1] == 'Z'))
         {
             ++commands;
         }
@@ -96,7 +99,7 @@ static int load_header(FILE *fl, char *areaname, struct area_data *area)
     line_num += get_line(fl, buf);
     if ((ptr = strchr(buf, '~')) != NULL)
     {
-        *ptr = '\0';
+        ptr[0] = '\0';
     }
     area->name = strdup(buf);
 
@@ -104,7 +107,7 @@ static int load_header(FILE *fl, char *areaname, struct area_data *area)
     line_num += get_line(fl, buf);
     if ((ptr = strchr(buf, '~')) != NULL)
     {
-        *ptr = '\0';
+        ptr[0] = '\0';
     }
     area->author_name = strdup(buf);
 
@@ -112,7 +115,7 @@ static int load_header(FILE *fl, char *areaname, struct area_data *area)
     line_num += get_line(fl, buf);
     if ((ptr = strchr(buf, '~')) != NULL)
     {
-        *ptr = '\0';
+        ptr[0] = '\0';
     }
     area->author_email = strdup(buf);
 
@@ -121,7 +124,54 @@ static int load_header(FILE *fl, char *areaname, struct area_data *area)
 
 static int load_commands(FILE *fl, char *areaname, struct area_data *area, int line_num)
 {
-    return 0;
+    char buf[READ_SIZE];
+    int tmp;
+
+    for (int cmd = 0; ; ++cmd)
+    {
+        if ((tmp = get_line(fl, buf)) == 0)
+        {
+            log("SYSERR: Unexpected end of file at line %d for area #%lld \"%s\"", line_num, area->area_number, area->name);
+        }
+
+        line_num += tmp;
+
+        char *ptr = buf;
+        skip_spaces(&ptr);
+
+        if (ptr[0] == '*')
+        {
+            continue;
+        }
+
+        if (ptr[0] == 'S' || ptr[0] == '$')
+        {
+            break;
+        }
+
+        if (ptr[1] == 'M' || ptr[1] == 'O' || ptr[1] == 'S' || ptr[1] == 'W' || ptr[1] == 'Z')
+        {
+            area->loads[cmd].type = ptr[1];
+
+            ptr += 2;
+
+            char buf2[READ_SIZE];
+            if (sscanf(ptr, "%s", buf2) != 1)
+            {
+                log("SYSERR: Could not read path on line %d for area #%lld \"%s\"", line_num, area->area_number, area->name);
+                exit(1);
+            }
+
+            area->loads[cmd].path = strdup(buf2);
+        }
+        else
+        {
+            log("SYSERR: Illegal area command on line %d for area #%lld \"%s\"", line_num, area->area_number, area->name);
+            exit(1);
+        }
+    }
+
+    return line_num;
 }
 
 /* ********************************************************************* */
