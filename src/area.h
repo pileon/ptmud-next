@@ -32,4 +32,8 @@ struct area_data
     struct area_load_data *loads;
 };
 
+void load_area(FILE *fl, char *areaname);
+
+extern struct area_data *areas;
+
 #endif //PTMUD_NEXT_AREA_H
