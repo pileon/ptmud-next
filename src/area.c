@@ -20,7 +20,7 @@ struct area_data *areas = NULL;
 
 /* ********************************************************************* */
 
-static int count_commands(FILE *fl);
+static size_t count_commands(FILE *fl);
 static int load_header(FILE *fl, char *areaname, struct area_data *area);
 static int load_commands(FILE *fl, char *areaname, struct area_data *area, int line_num);
 
@@ -30,7 +30,7 @@ void load_area(FILE *fl, char *areaname)
 {
     static area_rnum rarea = 0;
 
-    int commands = count_commands(fl);
+    size_t commands = count_commands(fl);
 
     struct area_data *area = &areas[rarea];
 
@@ -42,6 +42,7 @@ void load_area(FILE *fl, char *areaname)
     }
     else
     {
+        area->load_count = commands;
         area->loads = malloc(commands * sizeof(struct area_load_data));
         if (area->loads == NULL)
         {
@@ -51,11 +52,13 @@ void load_area(FILE *fl, char *areaname)
 
         load_commands(fl, areaname, area, line_num);
     }
+
+    ++rarea;
 }
 
 /* ********************************************************************* */
 
-static int count_commands(FILE *fl)
+static size_t count_commands(FILE *fl)
 {
     char buf[READ_SIZE];
 
@@ -63,7 +66,7 @@ static int count_commands(FILE *fl)
     for (int i = 0; i < 4; ++i)
         get_line(fl, buf);
 
-    int commands = 0;
+    size_t commands = 0;
 
     while (get_line(fl, buf))
     {

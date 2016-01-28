@@ -21,6 +21,7 @@ struct area_data
     char     *author_email;
 
     struct area_load_data *loads;
+    size_t                 load_count;  // Number of entries in loads
 };
 
 void load_area(FILE *fl, char *areaname);
