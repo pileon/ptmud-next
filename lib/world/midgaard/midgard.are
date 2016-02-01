@@ -1,0 +1,26 @@
+#30
+midgaard~
+The town of Midgaard and its surroundings~
+DikuMUD~
+~
+~
+
+* The actual town of Midgaard
+LZ 30.zon
+LW 30.wld
+LM 30.mob
+LO 30.obj
+LS 30.shp
+
+* The southern part of Midgaard and the river
+LZ 31.zon
+LW 31.wld
+LM 31.mob
+LO 31.obj
+LS 31.shp
+
+* The chessboard of Midgaard
+LZ 36.zon
+LW 36.wld
+LM 36.mob
+LO 36.obj
