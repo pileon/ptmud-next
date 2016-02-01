@@ -54,6 +54,8 @@ void load_area(FILE *fl, char *areaname)
     }
 
     ++rarea;
+
+    // TODO: Load the contents of the area here or separately after all areas have been loaded?
 }
 
 /* ********************************************************************* */
@@ -63,7 +65,7 @@ static size_t count_commands(FILE *fl)
     char buf[READ_SIZE];
 
     // Skip the header lines
-    for (int i = 0; i < 4; ++i)
+    for (int i = 0; i < AREA_HEADER_LINES; ++i)
         get_line(fl, buf);
 
     size_t commands = 0;
@@ -98,7 +100,7 @@ static int load_header(FILE *fl, char *areaname, struct area_data *area)
         exit(1);
     }
 
-    // Get area name
+    // Get area short name
     line_num += get_line(fl, buf);
     if ((ptr = strchr(buf, '~')) != NULL)
     {
@@ -106,13 +108,29 @@ static int load_header(FILE *fl, char *areaname, struct area_data *area)
     }
     area->name = strdup(buf);
 
-    // Get area author name
+    // Get area long name
+    line_num += get_line(fl, buf);
+    if ((ptr = strchr(buf, '~')) != NULL)
+    {
+        ptr[0] = '\0';
+    }
+    area->long_name = strdup(buf);
+
+    // Get area author MUD name
     line_num += get_line(fl, buf);
     if ((ptr = strchr(buf, '~')) != NULL)
     {
         ptr[0] = '\0';
     }
     area->author_name = strdup(buf);
+
+    // Get area author real name
+    line_num += get_line(fl, buf);
+    if ((ptr = strchr(buf, '~')) != NULL)
+    {
+        ptr[0] = '\0';
+    }
+    area->author_real_name = strdup(buf);
 
     // Get area author email address
     line_num += get_line(fl, buf);
