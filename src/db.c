@@ -24,6 +24,7 @@
 #include "interpreter.h"
 #include "house.h"
 #include "constants.h"
+#include "area.h"
 
 /**************************************************************************
 *  declarations of most of the 'global' variables                         *
@@ -378,6 +379,18 @@ ACMD(do_reboot)
 
 void boot_world(void)
 {
+    {
+        char cwd[PATH_MAX];
+        log("cwd = %s", getcwd(cwd, sizeof(cwd)));
+        FILE *fl = fopen("world/midgaard/midgaard.are", "r");
+        if (fl != NULL)
+        {
+            areas = malloc(sizeof(struct area_data) * 1);
+            log("Loading midgaard.are");
+            load_area(fl, "midgaard");
+        }
+    }
+
     log("Loading zone table.");
     index_boot(DB_BOOT_ZON);
 

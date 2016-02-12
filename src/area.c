@@ -153,6 +153,7 @@ static int load_commands(FILE *fl, char *areaname, struct area_data *area, int l
         if ((tmp = get_line(fl, buf)) == 0)
         {
             log("SYSERR: Unexpected end of file at line %d for area #%lld \"%s\"", line_num, area->area_number, area->name);
+            break;
         }
 
         line_num += tmp;
