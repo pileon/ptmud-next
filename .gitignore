@@ -1,3 +1,6 @@
+/lib/etc/plrmail
+/lib/etc/time
+/lib/etc/players
 src/conf.h
 
 ### CMake template
