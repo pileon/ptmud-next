@@ -10,3 +10,7 @@ set(SOURCE_FILES
     area.c area.h)
 
 add_executable(ptmud-next ${SOURCE_FILES})
+
+add_custom_target(valgrind
+        COMMAND valgrind ${CMAKE_CURRENT_BINARY_DIR}/ptmud-next -d${PROJECT_SOURCE_DIR}/lib
+        DEPENDS ptmud-next)
