@@ -17,6 +17,7 @@
 #include "interpreter.h"
 
 struct area_data *areas = NULL;
+area_rnum top_of_area_table = 0;
 
 /* ********************************************************************* */
 
@@ -53,7 +54,7 @@ void load_area(FILE *fl, char *areaname)
         load_commands(fl, areaname, area, line_num);
     }
 
-    ++rarea;
+    top_of_area_table = ++rarea - 1;
 
     // TODO: Load the contents of the area here or separately after all areas have been loaded?
 }

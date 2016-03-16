@@ -31,5 +31,6 @@ struct area_data
 void load_area(FILE *fl, char *areaname);
 
 extern struct area_data *areas;
+extern area_rnum top_of_area_table;
 
 #endif //PTMUD_NEXT_AREA_H

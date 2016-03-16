@@ -380,14 +380,17 @@ ACMD(do_reboot)
 void boot_world(void)
 {
     {
-        char cwd[PATH_MAX];
-        log("cwd = %s", getcwd(cwd, sizeof(cwd)));
         FILE *fl = fopen("world/midgaard/midgaard.are", "r");
         if (fl != NULL)
         {
             areas = malloc(sizeof(struct area_data) * 1);
             log("Loading midgaard.are");
             load_area(fl, "midgaard");
+        }
+
+        for (area_rnum a = 0; a <= top_of_area_table; ++a)
+        {
+            log("DEBUG: area #%llu (%llu): %s", areas[a].area_number, a, areas[a].name);
         }
     }
 
