@@ -192,7 +192,7 @@ ACMD(do_olc)
 /* OLC interpreter command; called by do_olc */
 void olc_interpreter(void *targ, int mode, char *arg)
 {
-    int              error     = 0, command;
+    int              error __attribute__((unused))     = 0, command;
     char             command_string[MAX_INPUT_LENGTH];
     struct char_data *olc_mob  = NULL;
     struct room_data *olc_room = NULL;
