@@ -377,22 +377,116 @@ ACMD(do_reboot)
 }
 
 
-void boot_world(void)
+void index_boot_areas(void)
 {
+    const char *index_name;
+    char       buf1[MAX_STRING_LENGTH], buf2[PATH_MAX];
+
+    if (mini_mud)
+        index_name = LIB_WORLD MINDEX_FILE;
+    else
+        index_name = LIB_WORLD INDEX_FILE;
+
+    FILE *index_file = fopen(index_name, "r");
+    if (index_file == NULL)
     {
-        FILE *fl = fopen("world/midgaard/midgaard.are", "r");
-        if (fl != NULL)
+        log("SYSERR: Could not open area index file %s: %s",
+            index_name, strerror(errno));
+        exit(1);
+    }
+
+    size_t area_count = 0;
+
+    // First count the number of areas in the index file
+    while (fgets(buf1, sizeof(buf1), index_file) != NULL)
+    {
+        // Remove the newline added by fgets
+        if (strlen(buf1) > 0 && buf1[strlen(buf1) - 1] == '\n')
+            buf1[strlen(buf1) - 1] = '\0';
+
+        char *ptr = buf1;
+        skip_spaces(&ptr);
+
+        if (strlen(ptr) == 0)
+            continue;
+
+        if (ptr[0] == '*')
+            continue;
+
+        if (ptr[0] == '$')
+            break;
+
+        ++area_count;
+    }
+    rewind(index_file);
+
+    // Create all areas
+    areas = malloc(sizeof(struct area_data) * area_count);
+    if (areas == NULL)
+    {
+        log("SYSERR: Could not allocate memory for %zd areas", area_count);
+        exit(1);
+    }
+
+    // And finally load all areas
+    while (fgets(buf1, sizeof(buf1), index_file) != NULL)
+    {
+        // Remove the newline added by fgets
+        if (strlen(buf1) > 0 && buf1[strlen(buf1) - 1] == '\n')
+            buf1[strlen(buf1) - 1] = '\0';
+
+        char *ptr = buf1;
+        skip_spaces(&ptr);
+
+        if (strlen(ptr) == 0)
+            continue;
+
+        if (ptr[0] == '*')
+            continue;
+
+        if (ptr[0] == '$')
+            break;
+
+        snprintf(buf2, sizeof(buf2), "%s%s", LIB_WORLD, ptr);
+        FILE *area_file = fopen(buf2, "r");
+        if (area_file == NULL)
         {
-            areas = malloc(sizeof(struct area_data) * 1);
-            log("Loading midgaard.are");
-            load_area(fl, "midgaard");
+            log("SYSERR: File '%s' listed in index %s: %s",
+                buf2, index_name, strerror(errno));
+            continue;
         }
 
-        for (area_rnum a = 0; a <= top_of_area_table; ++a)
-        {
-            log("DEBUG: area #%llu (%llu): %s", areas[a].area_number, a, areas[a].name);
-        }
+        load_area(area_file, ptr);
+
+        fclose(area_file);
     }
+
+    fclose(index_file);
+}
+
+
+void boot_world(void)
+{
+    index_boot_areas();
+//    for (area_rnum a = 0; a <= top_of_area_table; ++a)
+//    {
+//        log("DEBUG: area #%llu (%llu): %s", areas[a].area_number, a, areas[a].name);
+//    }
+
+//    {
+//        FILE *fl = fopen("world/midgaard/midgaard.are", "r");
+//        if (fl != NULL)
+//        {
+//            areas = malloc(sizeof(struct area_data) * 1);
+//            log("Loading midgaard.are");
+//            load_area(fl, "midgaard");
+//        }
+//
+//        for (area_rnum a = 0; a <= top_of_area_table; ++a)
+//        {
+//            log("DEBUG: area #%llu (%llu): %s", areas[a].area_number, a, areas[a].name);
+//        }
+//    }
 
     log("Loading zone table.");
     index_boot(DB_BOOT_ZON);
@@ -566,6 +660,8 @@ void destroy_db(void)
         }
     }
     free(zone_table);
+
+    // TODO: Areas
 }
 
 
