@@ -377,7 +377,7 @@ ACMD(do_reboot)
 }
 
 
-void index_boot_areas(void)
+void index_load_areas(void)
 {
     const char *index_name;
     char       buf1[MAX_STRING_LENGTH], buf2[PATH_MAX];
@@ -465,34 +465,214 @@ void index_boot_areas(void)
 }
 
 
+size_t count_load_type(const char type)
+{
+    size_t count = 0;
+
+    for (area_rnum area = 0; area <= top_of_area_table; ++area)
+    {
+        for (size_t i = 0; i < areas[area].load_count; ++i)
+        {
+            if (areas[area].loads[i].type == type)
+                ++count;
+        }
+    }
+
+    return count;
+}
+
+size_t count_records_single(int mode, char *area, char *filename)
+{
+    size_t count = 0;
+
+    char buf[PATH_MAX];
+    snprintf(buf, sizeof(buf), "%s%s/%s",
+             LIB_WORLD, area, filename);
+
+    FILE *file = fopen(buf, "r");
+    if (file == NULL)
+    {
+        log("SYSERR: %s: %s", buf, strerror(errno));
+        exit(1);
+    }
+
+    if (mode == DB_BOOT_ZON)
+    {
+        ++count;
+    }
+    else if (mode == DB_BOOT_HLP)
+    {
+        count = count_alias_records(file);
+    }
+    else
+    {
+        count = count_hash_records(file);
+    }
+
+    fclose(file);
+
+    return count;
+}
+
+size_t count_records(int mode, char type)
+{
+    size_t count = 0;
+
+    for (area_rnum area = 0; area <= top_of_area_table; ++area)
+    {
+        for (size_t i = 0; i < areas[area].load_count; ++i)
+        {
+            if (areas[area].loads[i].type == type)
+            {
+                count += count_records_single(
+                        mode, areas[area].name, areas[area].loads[i].path);
+            }
+        }
+    }
+
+    return count;
+}
+
+void actual_boot_area(size_t count, int mode, FILE *file, char *path)
+{
+    switch (mode)
+    {
+    case DB_BOOT_WLD:
+    case DB_BOOT_OBJ:
+    case DB_BOOT_MOB:
+        discrete_load(file, mode, path);
+        break;
+    case DB_BOOT_ZON:
+        load_zones(file, path);
+        break;
+    case DB_BOOT_SHP:
+        boot_the_shops(file, path, count);
+        break;
+
+    default:
+        break;
+    }
+}
+
+static void create_world_data(int mode, size_t count)
+{
+    size_t size[2];
+
+    /*
+     * NOTE: "bytes" does _not_ include strings or other later malloc'd things.
+     */
+    switch (mode)
+    {
+    case DB_BOOT_WLD:
+        CREATE(world, struct room_data, count);
+        size[0] = sizeof(struct room_data) * count;
+        log("   %zd rooms, %zd bytes.", count, size[0]);
+        break;
+    case DB_BOOT_MOB:
+        CREATE(mob_proto, struct char_data, count);
+        CREATE(mob_index, struct index_data, count);
+        size[0] = sizeof(struct index_data) * count;
+        size[1] = sizeof(struct char_data) * count;
+        log("   %zd mobs, %zd bytes in index, %zd bytes in prototypes.", count, size[0],
+            size[1]);
+        break;
+    case DB_BOOT_OBJ:
+        CREATE(obj_proto, struct obj_data, count);
+        CREATE(obj_index, struct index_data, count);
+        size[0] = sizeof(struct index_data) * count;
+        size[1] = sizeof(struct obj_data) * count;
+        log("   %zd objs, %zd bytes in index, %zd bytes in prototypes.", count, size[0],
+            size[1]);
+        break;
+    case DB_BOOT_ZON:
+        CREATE(zone_table, struct zone_data, count);
+        size[0] = sizeof(struct zone_data) * count;
+        log("   %zd zones, %zd bytes.", count, size[0]);
+        break;
+    case DB_BOOT_HLP:
+        CREATE(help_table, struct help_index_element, count);
+        size[0] = sizeof(struct help_index_element) * count;
+        log("   %zd entries, %zd bytes.", count, size[0]);
+        break;
+
+    default:
+        break;
+    }
+}
+
+void boot_areas(const char type)
+{
+    int mode;
+
+    switch (type)
+    {
+    case 'Z':
+        mode = DB_BOOT_ZON;
+        break;
+    case 'W':
+        mode = DB_BOOT_WLD;
+        break;
+    case 'S':
+        mode = DB_BOOT_SHP;
+        break;
+    case 'O':
+        mode = DB_BOOT_OBJ;
+        break;
+    case 'M':
+        mode = DB_BOOT_MOB;
+        break;
+
+    default:
+        if (isprint(type))
+            log("SYSERR: Unknown area boot mode '%c'", type);
+        else
+            log("SYSERR: Unknown area boot mode 0x%02hhx", type);
+        return;
+    }
+
+    size_t count = count_records(mode, type);
+
+    create_world_data(mode, count);
+
+    for (area_rnum area = 0; area <= top_of_area_table; ++area)
+    {
+        for (size_t i = 0; i < areas[area].load_count; ++i)
+        {
+            if (areas[area].loads[i].type == type)
+            {
+                char buf[PATH_MAX];
+                snprintf(buf, sizeof(buf), "%s%s/%s",
+                         LIB_WORLD, areas[area].name, areas[area].loads[i].path);
+
+                FILE *file = fopen(buf, "r");
+                if (file == NULL)
+                {
+                    log("SYSERR: %s: %s", buf, strerror(errno));
+                    exit(1);
+                }
+
+                actual_boot_area(count, mode, file, buf);
+
+                fclose(file);
+            }
+        }
+    }
+}
+
 void boot_world(void)
 {
-    index_boot_areas();
+    index_load_areas();
+
 //    for (area_rnum a = 0; a <= top_of_area_table; ++a)
 //    {
 //        log("DEBUG: area #%llu (%llu): %s", areas[a].area_number, a, areas[a].name);
 //    }
 
-//    {
-//        FILE *fl = fopen("world/midgaard/midgaard.are", "r");
-//        if (fl != NULL)
-//        {
-//            areas = malloc(sizeof(struct area_data) * 1);
-//            log("Loading midgaard.are");
-//            load_area(fl, "midgaard");
-//        }
-//
-//        for (area_rnum a = 0; a <= top_of_area_table; ++a)
-//        {
-//            log("DEBUG: area #%llu (%llu): %s", areas[a].area_number, a, areas[a].name);
-//        }
-//    }
-
     log("Loading zone table.");
-    index_boot(DB_BOOT_ZON);
+    boot_areas('Z');
 
     log("Loading rooms.");
-    index_boot(DB_BOOT_WLD);
+    boot_areas('W');
 
     log("Renumbering rooms.");
     renum_world();
@@ -501,19 +681,44 @@ void boot_world(void)
     check_start_rooms();
 
     log("Loading mobs and generating index.");
-    index_boot(DB_BOOT_MOB);
+    boot_areas('M');
 
     log("Loading objs and generating index.");
-    index_boot(DB_BOOT_OBJ);
-
-    log("Renumbering zone table.");
-    renum_zone_table();
+    boot_areas('O');
 
     if (!no_specials)
     {
         log("Loading shops.");
-        index_boot(DB_BOOT_SHP);
+        boot_areas('S');
     }
+
+
+//    log("Loading zone table.");
+//    index_boot(DB_BOOT_ZON);
+//
+//    log("Loading rooms.");
+//    index_boot(DB_BOOT_WLD);
+//
+//    log("Renumbering rooms.");
+//    renum_world();
+//
+//    log("Checking start rooms.");
+//    check_start_rooms();
+//
+//    log("Loading mobs and generating index.");
+//    index_boot(DB_BOOT_MOB);
+//
+//    log("Loading objs and generating index.");
+//    index_boot(DB_BOOT_OBJ);
+//
+//    log("Renumbering zone table.");
+//    renum_zone_table();
+//
+//    if (!no_specials)
+//    {
+//        log("Loading shops.");
+//        index_boot(DB_BOOT_SHP);
+//    }
 }
 
 
