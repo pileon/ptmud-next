@@ -686,39 +686,14 @@ void boot_world(void)
     log("Loading objs and generating index.");
     boot_areas('O');
 
+    log("Renumbering zone table.");
+    renum_zone_table();
+
     if (!no_specials)
     {
         log("Loading shops.");
         boot_areas('S');
     }
-
-
-//    log("Loading zone table.");
-//    index_boot(DB_BOOT_ZON);
-//
-//    log("Loading rooms.");
-//    index_boot(DB_BOOT_WLD);
-//
-//    log("Renumbering rooms.");
-//    renum_world();
-//
-//    log("Checking start rooms.");
-//    check_start_rooms();
-//
-//    log("Loading mobs and generating index.");
-//    index_boot(DB_BOOT_MOB);
-//
-//    log("Loading objs and generating index.");
-//    index_boot(DB_BOOT_OBJ);
-//
-//    log("Renumbering zone table.");
-//    renum_zone_table();
-//
-//    if (!no_specials)
-//    {
-//        log("Loading shops.");
-//        index_boot(DB_BOOT_SHP);
-//    }
 }
 
 
